@@ -1,4 +1,5 @@
 using AvaTrade.Microservices.NewsCollectionService;
+using AvaTrade.WebAPI.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.ConfigureHangfire();
+//builder.Services.ConfigureHangfire();
+
+// Get the authentication options from the appsettings.json file
+AuthenticationIssuerOptions options = new AuthenticationIssuerOptions();
+builder.Configuration.GetSection("AuthenticationIssuerOptions").Bind(options);
+builder.Services.ConfigureAuthentication(options);
 
 var app = builder.Build();
 
@@ -20,6 +26,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+//app.ConfigureHangfireDashboard();
 
 app.UseAuthorization();
 app.UseAuthentication();
