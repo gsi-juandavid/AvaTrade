@@ -1,4 +1,6 @@
 ﻿using AvaTrade.Microservices.DataStorageService;
+using AvaTrade.Microservices.DataStorageService.ServiceContracts;
+using AvaTrade.Microservices.DataStorageService.Services;
 using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
@@ -37,6 +39,11 @@ namespace AvaTrade.Microservices.NewsCollectionService
         {
             // Use Hangfire Dashboard
             app.UseHangfireDashboard();
+        }
+
+        public static void AddDataServices(this IServiceCollection services)
+        {
+            services.AddScoped<INewsService, NewsService>();
         }
     }
 }

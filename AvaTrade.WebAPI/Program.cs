@@ -5,7 +5,7 @@ using AvaTrade.WebAPI.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//*** Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,6 +28,7 @@ builder.Configuration.GetSection("NewsDatabase").Bind(dbConnection);
 builder.Services.AddSingleton(dbConnection);
 
 builder.Services.ConfigureHangfire();
+builder.Services.AddDataServices();
 
 var app = builder.Build();
 
