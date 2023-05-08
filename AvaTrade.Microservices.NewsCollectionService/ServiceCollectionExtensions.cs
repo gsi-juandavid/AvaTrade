@@ -1,5 +1,7 @@
-﻿using Hangfire;
+﻿using AvaTrade.Microservices.DataStorageService;
+using Hangfire;
 using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -10,17 +12,22 @@ namespace AvaTrade.Microservices.NewsCollectionService
     {
         public static void ConfigureHangfire(this IServiceCollection services)
         {
-            // Configure MongoDB storage for Hangfire
-            // TODO: Create and configure a MongoDB database, update this settings
-            var mongoClient = new MongoClient("mongodb://localhost:27017");
-            var mongoDatabase = mongoClient.GetDatabase("Hangfire");
-            services.AddHangfire(config =>
-                //config.UseMongoStorage(mongoDatabase, new MongoStorageOptions
-                //{
-                //    Prefix = "hangfire:"
-                //})
-                config.UseMongoStorage(mongoClient, "Hangfire", new MongoStorageOptions { Prefix = "hangfire:"})
-            );
+            // Configure MongoDB storage for Hangfire            
+            var dbOptions = services.BuildServiceProvider().GetRequiredService<DbOptions>();
+            var mongoClient = new MongoClient(dbOptions.ConnectionString);
+            var mongoDatabase = mongoClient.GetDatabase(dbOptions.DatabaseName);
+
+            var storageOptions = new MongoStorageOptions
+            {
+                Prefix = "hangfire",
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new DropMongoMigrationStrategy()
+                },
+                CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
+            };
+
+            services.AddHangfire(config => config.UseMongoStorage(mongoClient, dbOptions.DatabaseName, storageOptions));
 
             // Add the Hangfire server
             services.AddHangfireServer();

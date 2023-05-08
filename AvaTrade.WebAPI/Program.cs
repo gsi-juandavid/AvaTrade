@@ -1,4 +1,6 @@
+using AvaTrade.Microservices.DataStorageService;
 using AvaTrade.Microservices.NewsCollectionService;
+using AvaTrade.Microservices.NewsCollectionService.Polygon.io;
 using AvaTrade.WebAPI.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,12 +11,23 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.ConfigureHangfire();
 
 // Get the authentication options from the appsettings.json file
-AuthenticationIssuerOptions options = new AuthenticationIssuerOptions();
-builder.Configuration.GetSection("AuthenticationIssuerOptions").Bind(options);
-builder.Services.ConfigureAuthentication(options);
+AuthenticationIssuerOptions authOptions = new AuthenticationIssuerOptions();
+builder.Configuration.GetSection("AuthenticationIssuer").Bind(authOptions);
+builder.Services.ConfigureAuthentication(authOptions);
+
+// Get the Polygon.io options from the appsettings.json file
+PolygonOptions polygonOptions = new PolygonOptions();
+builder.Configuration.GetSection("Polygon").Bind(polygonOptions);
+builder.Services.AddSingleton(polygonOptions);
+
+// Get the main DB connection string from the appsettings.json file
+DbOptions dbConnection = new DbOptions();
+builder.Configuration.GetSection("NewsDatabase").Bind(dbConnection);
+builder.Services.AddSingleton(dbConnection);
+
+builder.Services.ConfigureHangfire();
 
 var app = builder.Build();
 
@@ -26,7 +39,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//app.ConfigureHangfireDashboard();
+app.ConfigureHangfireDashboard();
 
 app.UseAuthorization();
 app.UseAuthentication();
