@@ -1,7 +1,9 @@
 using AvaTrade.Microservices.DataStorageService;
 using AvaTrade.Microservices.NewsCollectionService;
+using AvaTrade.Microservices.NewsCollectionService.Jobs;
 using AvaTrade.Microservices.NewsCollectionService.Polygon.io;
 using AvaTrade.WebAPI.Authentication;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,11 @@ builder.Services.AddSingleton(dbConnection);
 
 builder.Services.ConfigureHangfire();
 builder.Services.AddDataServices();
+builder.Services.AddLogging(loggerBuilder =>
+{
+    loggerBuilder.ClearProviders();
+    loggerBuilder.AddConsole();
+});
 
 var app = builder.Build();
 
@@ -46,5 +53,8 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
+
+//Add hanfire jobs
+RecurringJob.AddOrUpdate<PolygonNewsCollectionJob>("PolygonNewsCollectionJob", x => x.ExecuteAsync(), Cron.Hourly);
 
 app.Run();

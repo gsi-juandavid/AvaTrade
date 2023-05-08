@@ -1,6 +1,7 @@
 ﻿using AvaTrade.Microservices.DataStorageService;
 using AvaTrade.Microservices.DataStorageService.ServiceContracts;
 using AvaTrade.Microservices.DataStorageService.Services;
+using AvaTrade.Microservices.NewsCollectionService.Jobs;
 using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
@@ -44,6 +45,6 @@ namespace AvaTrade.Microservices.NewsCollectionService
         public static void AddDataServices(this IServiceCollection services)
         {
             services.AddScoped<INewsService, NewsService>();
-        }
+        }        
     }
 }

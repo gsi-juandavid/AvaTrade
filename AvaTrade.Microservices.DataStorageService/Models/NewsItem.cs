@@ -30,8 +30,7 @@ namespace AvaTrade.Microservices.DataStorageService.Models
         }
          */
 
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonId]        
         public string? Id { get; set; }
 
         public NewsPublisher? Publisher { get; set; }
