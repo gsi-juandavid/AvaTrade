@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AvaTrade.WebAPI.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     [Route("api/auth/register")]
     public class AuthenticationController : ControllerBase
